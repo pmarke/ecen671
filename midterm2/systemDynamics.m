@@ -1,0 +1,63 @@
+classdef systemDynamics < handle
+    %----------------------------
+    properties
+        state
+        a1
+        a0
+        b0
+        A
+        B
+        C
+        Ts
+    end
+    %----------------------------
+    methods
+        %---constructor-------------------------
+        function self = systemDynamics(Ts)
+            % Initial state conditions
+            self.state = [...
+                        0;...          
+                        0;... 
+                        ];    
+            self.a1 = 1.0;
+            self.a0 = 2.0;
+            self.b0 = 3.0;
+            self.A = [0, 1; -self.a0, -self.a1];
+            self.B = [0; self.b0];
+            self.C = [1, 0];
+            self.Ts = Ts; 
+          
+        end
+        %----------------------------
+        function self = propagateDynamics(self, u)
+            %
+            % Integrate the differential equations defining dynamics
+            % P.Ts is the time step between function calls.
+            % u contains the system input(s).
+            % 
+            % Integrate ODE using Runge-Kutta RK4 algorithm
+            k1 = self.derivatives(self.state, u);
+            k2 = self.derivatives(self.state + self.Ts/2*k1, u);
+            k3 = self.derivatives(self.state + self.Ts/2*k2, u);
+            k4 = self.derivatives(self.state + self.Ts*k3, u);
+            self.state = self.state + self.Ts/6 * (k1 + 2*k2 + 2*k3 + k4);
+        end
+        %----------------------------
+        function xdot = derivatives(self, state, u)
+            xdot = self.A*state + self.B*u;
+        end
+        %----------------------------
+        function y = output(self)
+            y = self.C*self.state;
+        end
+        %----------------------------
+        function x = states(self)
+            %
+            % Returns all current states as a list
+            %
+            x = self.state;
+        end
+    end
+end
+
+
