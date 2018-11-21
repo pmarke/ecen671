@@ -1,0 +1,35 @@
+function [Q,R] = myqr(A,index)
+
+[r,~] = size(A);
+x = A(index:end,index);                % Extract the vector we want to operate on
+
+% Ensure that there are non-zero elements in the vector
+if (norm(x) > 0)
+
+    e1 = zeros(size(x,1),1);               % Form a basis vector
+    e1(1) = 1;
+    v = x+sign(x(1))*norm(x)*e1;           % Form the Householder vector
+    Hv = eye(size(v,1)) - 2*(v*v')/(v'*v); % Form the Householder transformation
+
+    % Construct the Q matrix
+    Q = eye(r);
+    Q(index:end,index:end) = Hv;
+
+    % Compute the new A matrix
+    A_new = Q*A;
+
+end
+
+index = index+1;
+
+if index < r
+    [Q_past,R] = myqr(A_new,index);
+    Q = Q*Q_past;
+else
+    R = A_new;
+end
+
+
+
+
+end
