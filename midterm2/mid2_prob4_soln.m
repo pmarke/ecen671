@@ -9,16 +9,18 @@ a0_history = [];
 b0_history = [];
 x_rls = [0; 0; 0];
 
+
+
 % main simulation loop
 t = 0;  % time starts at t=0
-while t < 100  
+while t < 100
     y = system.output;
     u = sin(0.01*t)+sin(0.1*t)+sin(t)+sin(10*t);
     system.propagateDynamics(u);  % Propagate the dynamics
     
     % update rls algorithm
-    rls.update(y, u);
-    x_rls = rls.state;
+    rls.update(y, u,system.M(1,:));
+    x_rls = rls.states;
     
     % update histories
     y_history = [y_history; y];    
@@ -38,18 +40,18 @@ figure(1), clf
     subplot(311)
     plot(t_history, a1_history,'b')
     hold on
-    plot(t_history, a1_ls*ones(size(t_history)),'g')
+    plot(t_history, 1*ones(size(t_history)),'g')
     ylabel('a_1')
 
     subplot(312)
     plot(t_history, a0_history,'b')
     hold on
-    plot(t_history, a0_ls*ones(size(t_history)),'g')
+    plot(t_history, 2*ones(size(t_history)),'g')
     ylabel('a_0')
 
     subplot(313)
     plot(t_history, b0_history,'b')
     hold on
-    plot(t_history, b0_ls*ones(size(t_history)),'g')
+    plot(t_history, 3*ones(size(t_history)),'g')
     ylabel('b_0')
 

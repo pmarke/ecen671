@@ -1,0 +1,27 @@
+function [a1,a0,b0] = batch_ls(y,u,Ts)
+
+% Computes the coefficients a1,a0,b0 using batch least square.
+
+% For each sample estimate y_dot and y_ddot where y_dot is the first time
+% derivative and y_ddot is the second time derivative.
+y = flip(y);
+
+u = flip(u);
+
+y_dot = (y(1:end-1)-y(2:end))/Ts;
+y_dot = y_dot(2:end);
+y_ddot = (y(1:end-2)-2*y(2:end-1)+y(3:end))/Ts^2;
+y = y(3:end);
+u = u(3:end);
+
+A = [y_ddot,y_dot,u];
+
+x = inv(A'*A)*A'*y;
+
+a0 = -1/x(1);
+a1 = x(2)/(x(1)+1e-10);
+b0 =  x(3)/(-x(1)+1e-10);
+
+
+end
+

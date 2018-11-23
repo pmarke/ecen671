@@ -1,0 +1,24 @@
+
+Ts = 0.01;
+
+
+while t < 0.5
+    y = system.output;
+    u = sin(0.01*t)+sin(0.1*t)+sin(t)+sin(10*t);
+    system.propagateDynamics(u);  % Propagate the dynamics
+    
+    % update rls algorithm
+    rls.update(y, u);
+    x_rls = rls.states;
+    
+    % update histories
+    y_history = [y_history; y];    
+    u_history = [u_history; u];
+    t_history = [t_history; t];
+    a1_history = [a1_history; x_rls(1)];
+    a0_history = [a0_history; x_rls(2)];
+    b0_history = [b0_history; x_rls(3)];
+    
+    % advance time by Ts
+    t = t + Ts;     
+end
